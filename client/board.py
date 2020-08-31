@@ -50,7 +50,8 @@ class Board(object):
 
 
     def update(self, row: int, col: int, color: int) -> None:
-        self.board[row][col] = color
+        if 0 <= row < self.ROWS and 0 <= col < self.COLS:
+            self.board[row][col] = color
 
     def clear(self) -> None:
         self.board = self.create_board()

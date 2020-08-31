@@ -8,7 +8,7 @@ from game import Game
 
 
 class Server(object):
-    PLAYERS = 1
+    PLAYERS = 4
 
     def __init__(self):
         self.connection_queue: List[Player] = []
@@ -22,7 +22,6 @@ class Server(object):
                 try:
                     data = conn.recv(1024).decode()
                     data = json.loads(data)
-                    print("[LOG] receive data:", data)
                 except Exception as e:
                     break
 
@@ -40,7 +39,7 @@ class Server(object):
                         correct = player.guess(data['0'][0])
                         send_msg[0] = correct
                     elif key == 1:  # skip
-                        skip = player.game.skip()
+                        skip = player.game.skip(player)
                         send_msg[1] = skip
                     elif key == 2:  # get chat
                         content = player.game.round.chat.get_chat()
@@ -61,21 +60,32 @@ class Server(object):
                         skips = player.game.round.skips
                         send_msg[7] = skips
                     elif key == 8:  # update board
-                        x, y, color = data[8][:3]
-                        player.game.update_board(x, y, color)
+                        if player.game.round.player_drawing == player:
+                            row, col, color = data['8'][:3]
+                            player.game.update_board(row, col, color)
                     elif key == 9:  # get round time
                         t = player.game.round.time
                         send_msg[9] = t
+                    elif key == 10:  # clear board
+                        if player.game.round.player_drawing == player:
+                            player.game.board.clear()
+                    elif key == 11:
+                        send_msg[11] = player.game.round.player_drawing == player
                     else:
                         raise Exception("Not a valid request")
 
                 # player is not apart of game
-                print(f"send {len(json.dumps(send_msg).encode())} bytes")
                 conn.sendall(json.dumps(send_msg).encode() + b".")
             except Exception as e:
                 print(f"[EXCEPTION] {player.get_name()} disconnected: {e}")
                 break
-                # TODO : call player game disconnect method
+
+        if player.game:
+            player.game.player_disconnected(player)
+
+        if player in self.connection_queue:
+            self.connection_queue.remove(player)
+
         print(f"[DISCONNECT] {player.name} disconnected")
         conn.close()
 

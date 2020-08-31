@@ -52,6 +52,7 @@ class BottomBar:
         if self.clear_button.click(x, y):
             print("Clear button pressed")
             self.game.board.clear()
+            self.game.conn.send({10: []})
 
         if self.erase_button.click(x, y):
             print("Erase button pressed")

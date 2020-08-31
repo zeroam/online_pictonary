@@ -12,18 +12,21 @@ class Round(object):
         self.players = players
         self.game = game
         self.player_guessed = []
+        self.players_skipped = []
         self.skips = 0
         self.player_scores = {player: 0 for player in players}
         self.time = 75
         self.chat = Chat(self)
         start_new_thread(self.time_thread, ())
 
-    def skip(self) -> bool:
+    def skip(self, player) -> bool:
         """returns true if round skipped threshold met"""
-        self.skips += 1
-
-        if self.skips > len(self.players) - 2:
-            return True
+        if player not in self.players_skipped:
+            self.players_skipped.append(player)
+            self.skips += 1
+            self.chat.update_chat(f"Player has voted to skip ({self.skips}/{len(self.players) - 2})")
+            if self.skips >= len(self.players) - 2:
+                return True
 
         return False
 
@@ -69,7 +72,6 @@ class Round(object):
             self.end_round("Drawing player left")
 
     def end_round(self, msg: str):
-        # TODO : implement end_round functionality
         for player in self.players:
             player.update_score(self.player_scores[player])
         self.game.round_ended()

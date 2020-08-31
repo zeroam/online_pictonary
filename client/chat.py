@@ -14,8 +14,8 @@ class Chat(object):
         self.type_font = pygame.font.SysFont("comicsans", 30)
         self.CHAT_GAP = 20
 
-    def update_chat(self, msg: str) -> None:
-        self.contents.append(msg)
+    def update_chat(self, content: str) -> None:
+        self.contents = content
 
     def draw(self, win):
         pygame.draw.rect(
@@ -36,7 +36,7 @@ class Chat(object):
         )
 
         while len(self.contents) * self.CHAT_GAP > self.HEIGHT - 60:
-            self.contents.pop(0)
+            self.contents = self.contents[:-1]
 
         for i, chat in enumerate(self.contents):
             txt = self.chat_font.render(f" - {chat}", 1, (0, 0, 0))

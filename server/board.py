@@ -8,9 +8,9 @@ class Board(object):
         """init the board by creating emtpy board (all white pixels)"""
         self.data = self._create_empty_board()
 
-    def update(self, x: int, y: int, color: int) -> None:
+    def update(self, row: int, col: int, color: int) -> None:
         """update singular pixel of the board"""
-        self.data[y][x] = color
+        self.data[row][col] = color
 
     def clear(self) -> None:
         """clears board to white"""

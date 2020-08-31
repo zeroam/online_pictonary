@@ -10,7 +10,7 @@ class Chat(object):
         self.content.append(msg)
 
     def get_chat(self):
-        self.content
+        return self.content
 
     def __len__(self):
         return len(self.content)

@@ -14,7 +14,7 @@ class Game(object):
         self.round = None
         self.board = Board()
         self.player_draw_ind = 0
-        self.round_count = 1
+        self.round_count = 0
         self.start_new_round()
 
     def start_new_round(self):
@@ -53,12 +53,11 @@ class Game(object):
         scores = {player: player.get_score() for player in self.players}
         return scores
 
-    def skip(self) -> None:
+    def skip(self, player) -> None:
         """Increments the round skips, if skips are greater than
         threshold, starts new round."""
         if self.round:
-            new_round = self.round.skip()
-            self.round.chat.update_chat(f"Player has voted to skip ({self.round.skips}/{len(self.players)})")
+            new_round = self.round.skip(player)
             if new_round:
                 self.round.chat.update_chat(f"Round {self.round_count} has been skipped")
                 self.round_ended()
@@ -73,11 +72,11 @@ class Game(object):
         self.start_new_round()
         self.board.clear()
 
-    def update_board(self, x: int, y: int, color: int) -> None:
+    def update_board(self, y: int, x: int, color: int) -> None:
         """Calls update method on board."""
         if not self.board:
             raise Exception("No board created")
-        self.board.update(x, y, color)
+        self.board.update(y, x, color)
 
     def end_game(self) -> None:
         print(f"[GAME] game {self.id} ended")
